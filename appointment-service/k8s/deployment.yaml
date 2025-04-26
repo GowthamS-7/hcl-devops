@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: appointmentservice-container
-        image: ecr/appointmentservicejs-app:latest
+        image: 539935451710.dkr.ecr.us-east-1.amazonaws.com/hcl-devops-test/appointmentservicejs-app:latest
         ports:
         - containerPort: 3000
         readinessProbe:

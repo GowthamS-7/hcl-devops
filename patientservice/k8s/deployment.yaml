@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: patientservice-container
-        image: ecr/patientservicejs-app:latest
+        image: 539935451710.dkr.ecr.us-east-1.amazonaws.com/hcl-devops-test/patientservicejs-app:latest
         ports:
         - containerPort: 3000
         readinessProbe:
