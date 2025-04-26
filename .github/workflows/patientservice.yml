@@ -37,7 +37,7 @@ jobs:
 
     - name: Build, Tag, and Push Docker Image
       run: |
-        IMAGE_URI="${{ steps.login-ecr.outputs.registry }}/patientservice:latest"
+        IMAGE_URI="${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest"
         echo "Building Docker image..."
         docker build -t $IMAGE_URI .
         echo "Pushing Docker image..."
