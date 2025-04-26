@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appointmentservice-deployment
+  labels:
+    app: appointmentservice-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: appointmentservice-app
+  template:
+    metadata:
+      labels:
+        app: appointmentservice-app
+    spec:
+      containers:
+      - name: appointmentservice-container
+        image: ecr/appointmentservicejs-app:latest
+        ports:
+        - containerPort: 3000
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"

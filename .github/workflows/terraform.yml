@@ -14,8 +14,8 @@ on:
  
 env:
  TF_LOG: INFO
- AWS_ACCESS_KEY_ID: AKIAX3NVJFI7IQSV3T5N
- AWS_SECRET_ACCESS_KEY: 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
+ AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }
+ AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
  BUCKET_TF_STATE: hcl-state-bucket
  
 jobs:
@@ -29,7 +29,7 @@ jobs:
  
    steps:
      - name: Checkout the repository to the runner
-       uses: actions/checkout@v2
+       uses: actions/checkout@v4
  
      - name: Setup Terraform with specified version on the runner
        uses: hashicorp/setup-terraform@v2
@@ -38,7 +38,7 @@ jobs:
     
      - name: Terraform init
        id: init
-       run: terraform init -backend-config="bucket=hcl-state-bucket"
+       run: terraform init -backend-config="bucket=$BUCKET_TF_STATE"
  
      - name: Terraform format
        id: fmt

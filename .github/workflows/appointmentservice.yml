@@ -1,0 +1,61 @@
+name: Deploy appointment service App to EKS
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - appointment-service/**
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+     run:
+       shell: bash
+       working-directory: ./appointment-service
+
+    env:
+      AWS_REGION: us-east-1               
+      ECR_REPOSITORY: hcl-devops-test       
+      CLUSTER_NAME: eks-hcl
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v3
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+
+    - name: Build, Tag, and Push Docker Image
+      run: |
+        IMAGE_URI="${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest"
+        echo "Building Docker image..."
+        docker build -t $IMAGE_URI .
+        echo "Pushing Docker image..."
+        docker push $IMAGE_URI
+
+    - name: Update kubeconfig for EKS
+      run: |
+        aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
+
+    - name: Replace Image Placeholder
+      run: |
+        sed -i "s|IMAGE_PLACEHOLDER|${{ steps.login-ecr.outputs.registry }}/appointmentservice:latest|g" k8s/deployment.yaml
+
+    - name: Deploy to Kubernetes
+      run: |
+        kubectl apply -f k8s/deployment.yaml
+        kubectl apply -f k8s/service.yaml
+
+    - name: Verify Pods
+      run: |
+        kubectl get pods
