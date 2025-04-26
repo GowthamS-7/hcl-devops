@@ -8,7 +8,7 @@ module "ecr" {
   name = "ssm-bastion-1"
   namespace = "terraform-ecr"
   enable_lifecycle_policy = true
-  image_names = ["hcl-devops-appointment", "hcl-devops-patient"]
+  image_names = ["hcl-devops-test"]
   image_tag_mutability = "IMMUTABLE"
   max_image_count = 500
   scan_images_on_push = true
