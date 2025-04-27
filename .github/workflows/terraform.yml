@@ -1,16 +1,13 @@
 name: "Terraform Infrastructure Pipeline with GitHub Actions"
  
 on:
- push:
-   branches:
-   - main
-   paths:
-   - terraform/**
  pull_request:
    branches:
    - main
    paths:
    - terraform/**
+   types:
+   - closed
  
 env:
  TF_LOG: INFO
@@ -20,6 +17,7 @@ env:
  
 jobs:
  terraform:
+   if: github.event.pull_request.merged == true
    name: "Terraform Infrastructure Change Management"
    runs-on: ubuntu-latest
    defaults:
@@ -46,9 +44,7 @@ jobs:
  
      - name: Terraform plan
        id: plan
-       if: github.event_name == 'pull_request'
        run: terraform plan -no-color -input=false
-       continue-on-error: true
   
      - name: Terraform Plan Status
        if: steps.plan.outcome == 'failure'
